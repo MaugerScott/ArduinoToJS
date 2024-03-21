@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plain - Control LED with button</title>
+    <script lang="text/javascript" src="./dist/simple-web-serial.min.js"></script>
+</head>
+<body>
+    <button id="permissionElement">Connect to Serial Port</button>
+    <br><br>
+    <button onclick="toggleLED()">Toggle LED</button>
+
+    <script type="text/javascript">
+        let toggle = false;
+
+        const connection = SimpleWebSerial.setupSerialConnection(57600);
+        document.querySelector('#permissionElement').addEventListener('click', ()=>{
+            
+            connection.startConnection();
+
+            connection.on("log", function(value) {
+                console.log("log : " + value);
+            })
+            connection.on("clicked", function(value) {
+                console.log("clicked : " + value);
+            })
+        });
+
+        async function toggleLED() {
+            const byte = (toggle = !toggle) ? false : true
+            console.log(byte);
+            console.log("-----");
+            connection.sendEvent('led', byte);
+        }
+
+    </script>
+
+    <p id="explanation">
+        This is the easiest use case. The library handles requesting permission, setting up objects and converting bytes to
+        an array readable by the Serial.read() function of the Arduino.
+    </p>
+
+</body>
+</html>
